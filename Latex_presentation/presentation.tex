@@ -125,7 +125,7 @@ More competitors $\Rightarrow$ steeper curve, you must bid higher to win.
 We only allow bids $b\le v_i$ (bidding above the valuation never gives positive utility).
 \vspace{0.1cm}
 \begin{center}
-  \includegraphics[width=0.95\textwidth,height=0.42\textheight,keepaspectratio]{req2_estimation.png}\\[-0.05cm]
+  \includegraphics[width=0.95\textwidth,height=0.42\textheight,keepaspectratio]{figures/req2_estimation.png}\\[-0.05cm]
   {\tiny Theoretical $b^{k_i}$ vs.\ empirical win frequency over $T{=}2000$ rounds, $k=(2,3,5)$.
   All requirements share this generator; R3/R4 let $k_i$ change over time.}
 \end{center}
@@ -149,7 +149,7 @@ We only allow bids $b\le v_i$ (bidding above the valuation never gives positive 
   \end{column}
   \begin{column}{0.42\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.6\textheight,keepaspectratio]{req2_conflict_graph.png}
+    \includegraphics[width=\linewidth,height=0.6\textheight,keepaspectratio]{figures/req2_conflict_graph.png}
   \end{column}
 \end{columns}
 \end{frame}
@@ -176,7 +176,7 @@ We only allow bids $b\le v_i$ (bidding above the valuation never gives positive 
   \end{column}
   \begin{column}{0.43\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{req1_estimation.png}\\[0.03cm]
+    \includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{figures/req1_estimation.png}\\[0.03cm]
     {\tiny Win probability $b^{3}$ (blue) vs.\ empirical frequency over $5000$ rounds (orange).}
   \end{column}
 \end{columns}
@@ -199,7 +199,7 @@ We only allow bids $b\le v_i$ (bidding above the valuation never gives positive 
   \end{column}
   \begin{column}{0.43\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{r1_expected_reward.png}\\[0.03cm]
+    \includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{figures/r1_expected_reward.png}\\[0.03cm]
     {\tiny $\mu(b)$ over the arms; $0.4$ and $0.5$ are almost equally good.}
   \end{column}
 \end{columns}
@@ -256,12 +256,12 @@ We only allow bids $b\le v_i$ (bidding above the valuation never gives positive 
 \begin{columns}[T]
   \begin{column}{0.5\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{r1_ucb1_regret.png}\\[0.02cm]
+    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{figures/r1_ucb1_regret.png}\\[0.02cm]
     {\tiny (i) UCB1 without budget, 30 trials. Final regret $\approx 31$.}
   \end{column}
   \begin{column}{0.5\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{r1_budget_regret.png}\\[0.02cm]
+    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{figures/r1_budget_regret.png}\\[0.02cm]
     {\tiny (ii) UCB-like with budget, 30 trials, with a $\propto\!\sqrt t$ reference. Final regret $\approx 30$.}
   \end{column}
 \end{columns}
@@ -295,25 +295,26 @@ We only allow bids $b\le v_i$ (bidding above the valuation never gives positive 
   \item Semi-bandit feedback: we observe win/loss for every campaign we bid on.
 \end{itemize}
 \begin{center}
-  \includegraphics[width=0.95\textwidth,height=0.4\textheight,keepaspectratio]{req2_estimation.png}\\[-0.05cm]
+  \includegraphics[width=0.95\textwidth,height=0.4\textheight,keepaspectratio]{figures/req2_estimation.png}\\[-0.05cm]
   {\tiny Campaign 3 pays a lot more to win: 5 competitors, $\mathbb P(\text{win})=b^5$.}
 \end{center}
 \end{frame}
 
 \begin{frame}{R2 --- Baseline (Clairvoyant)}
 \scriptsize
-\textbf{One LP over super-arms} (expected values, budget only in expectation):
-\[
-  \max_{\gamma\in\Delta(\mathcal A)}\;\sum_{a\in\mathcal A}\gamma(a)\,\bar f(a)
-  \quad\text{s.t.}\quad \sum_{a\in\mathcal A}\gamma(a)\,\bar c(a)\le\rho,
-  \qquad
-  \bar f(a)=\sum_{i\in S}(v_i-b_i)\,b_i^{k_i},\;\;
-  \bar c(a)=\sum_{i\in S} b_i\,b_i^{k_i}.
-\]
+Clairvoyant in \emph{expectation}: knows $\mathbb P_i(b)=\mathbb P(b\ge m_i)=b^{k_i}$, not the realisations; budget met in expectation.
+\vspace{-0.15cm}
 \begin{columns}[T]
-  \begin{column}{0.5\textwidth}
-    \textbf{Without conflict graph} (3 independent simplices):
-    \begin{center}\scriptsize
+  \begin{column}{0.49\textwidth}
+    \textbf{Without conflict graph:} one $\gamma_i\in\Delta(\mathcal B)$ per campaign
+    \vspace{-0.35cm}
+    \begin{align*}
+      \max_{\gamma_1,\dots,\gamma_N}\;&\sum_{i=1}^{N}\sum_{b\in\mathcal B}\gamma_i(b)\,(v_i-b)\,\mathbb P_i(b)\\[-0.1cm]
+      \text{s.t.}\;&\sum_{i=1}^{N}\sum_{b\in\mathcal B}\gamma_i(b)\,b\,\mathbb P_i(b)\le\rho,
+      \quad \sum_{b}\gamma_i(b)=1\;\;\forall i
+    \end{align*}
+    \vspace{-0.45cm}
+    \begin{center}
     \begin{tabular}{@{}lll@{}}
       \toprule
       Campaign & Bid & Prob.\\
@@ -324,23 +325,30 @@ We only allow bids $b\le v_i$ (bidding above the valuation never gives positive 
       \bottomrule
     \end{tabular}
     \end{center}
+    \vspace{-0.2cm}
     $\OPT=0.0303$ per round, spends exactly $\rho=0.05$.
   \end{column}
-  \begin{column}{0.5\textwidth}
-    \textbf{With conflict graph} (102 super-arms, 2 and 3 exclusive):
-    \begin{center}\scriptsize
+  \begin{column}{0.49\textwidth}
+    \textbf{With conflict graph:} one $\gamma$ over super-arms $(S,b_S)\in\mathcal A$
+    \vspace{-0.35cm}
+    \begin{align*}
+      \max_{\gamma\in\Delta(\mathcal A)}\;&\sum_{(S,b_S)\in\mathcal A}\gamma(S,b_S)\sum_{i\in S}(v_i-b_i)\,\mathbb P_i(b_i)\\[-0.1cm]
+      \text{s.t.}\;&\sum_{(S,b_S)\in\mathcal A}\gamma(S,b_S)\sum_{i\in S} b_i\,\mathbb P_i(b_i)\le\rho
+    \end{align*}
+    \vspace{-0.45cm}
+    \begin{center}
     \begin{tabular}{@{}lll@{}}
       \toprule
-      Super-arm & Bids & Prob.\\
+      Super-arm $S$ & Bids $b_S$ & Prob.\\
       \midrule
-      $S=\{1,2\}$ & $(0.2,\,0.4)$ & $0.22$\\
-      $S=\{1,3\}$ & $(0.2,\,0.6)$ & $0.78$\\
+      $\{1,2\}$ & $(0.2,\,0.4)$ & $0.22$\\
+      $\{1,3\}$ & $(0.2,\,0.6)$ & $0.78$\\
       \bottomrule
     \end{tabular}
     \end{center}
-    $\OPT=0.0229$ per round, spends exactly $\rho=0.05$.\\[0.1cm]
-    The budget is tight, so the optimum \emph{mixes} two super-arms; the conflict costs
-    about a quarter of the reward.
+    \vspace{-0.2cm}
+    $\OPT=0.0229$ per round, spends exactly $\rho=0.05$;
+    the tight budget makes the optimum \emph{mix} two super-arms.
   \end{column}
 \end{columns}
 \end{frame}
@@ -393,7 +401,7 @@ optimistic values of every super-arm, and solve the clairvoyant LP with those va
   \end{column}
   \begin{column}{0.38\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{req2_conflict_graph.png}
+    \includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/req2_conflict_graph.png}
   \end{column}
 \end{columns}
 \end{frame}
@@ -403,12 +411,12 @@ optimistic values of every super-arm, and solve the clairvoyant LP with those va
 \begin{columns}[T]
   \begin{column}{0.5\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{req2_cumregret.png}\\[0.02cm]
+    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{figures/req2_cumregret.png}\\[0.02cm]
     {\tiny Cumulative regret, 10 trials ($T\cdot\OPT=45.9$).}
   \end{column}
   \begin{column}{0.5\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{req2_cum_cost.png}\\[0.02cm]
+    \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{figures/req2_cum_cost.png}\\[0.02cm]
     {\tiny Cumulative cost vs.\ budget $B=100$.}
   \end{column}
 \end{columns}
@@ -451,7 +459,7 @@ optimistic values of every super-arm, and solve the clairvoyant LP with those va
   \end{column}
   \begin{column}{0.50\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{r3_k_schedule.png}\\[0.05cm]
+    \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{figures/r3_k_schedule.png}\\[0.05cm]
     {\tiny $k_i(t)$: regimes switch every $L_i$ rounds (first 200 rounds).}
   \end{column}
 \end{columns}
@@ -483,36 +491,38 @@ optimistic values of every super-arm, and solve the clairvoyant LP with those va
   \end{column}
   \begin{column}{0.46\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.56\textheight,keepaspectratio]{r3_m_nonstat.png}\\[0.05cm]
+    \includegraphics[width=\linewidth,height=0.56\textheight,keepaspectratio]{figures/r3_m_nonstat.png}\\[0.05cm]
     {\tiny Realised $m_i(t)$ with regime mean and valuation $v_i$.}
   \end{column}
 \end{columns}
 \end{frame}
 
 % - - - - - - - - - - - - - - - - - - - -
-\begin{frame}{R3 --- Algorithm: primal-dual pacing over super-arms}
+\begin{frame}{R3 --- Algorithm: Primal-dual (Hedge $+$ OGD)}
 \scriptsize
-\textbf{Idea.} An action is a super-arm $a=(S,b)$. Full feedback gives
-$f_t(a),\,c_t(a)$ for \emph{every} super-arm, so the primal is an expert problem:
-Hedge maximises $L_t(a,\lambda)=f_t(a)-\lambda(c_t(a)-\rho)$ while OGD learns
-$\lambda\in[0,1/\rho]$; stop bidding once $B<1$.
-
+Lagrangian $L_t(a,\lambda)=f_t(a)-\lambda\,(c_t(a)-\rho)$, a repeated zero-sum game:
+\textbf{primal} player $=$ Hedge over super-arms (maximises $L_t$),
+\textbf{dual} player $=$ OGD on the budget price $\lambda\in[0,1/\rho]$ (minimises $L_t$).
+\vspace{-0.1cm}
 \begin{algobox}
 \begin{algorithm}[H]
   \scriptsize
-  \caption{\scriptsize Primal-dual bidding (full feedback)}
-  \KwIn{$B$, $T$, super-arms $\mathcal A$, rates $\eta_p,\eta_d$}
-  $\rho\leftarrow B/T$;\; $\lambda_1\leftarrow0$;\; $w_1(a)\leftarrow1$ for all $a$\;
+  \caption{\scriptsize Primal-dual bidding with budget (full feedback)}
+  \KwIn{$B$, $T$, super-arms $\mathcal A$ (incl.\ opt-out $(\emptyset,\emptyset)$), rates $\eta_p$, $\eta_d$}
+  $\rho\leftarrow B/T$,\quad $\lambda_1\leftarrow0$,\quad \textsc{Hedge} weights $w_1(a)\leftarrow1$ for all $a$\;
+  $[L_{\downarrow},L_{\uparrow}]\leftarrow\big[-(N b_{\max}-\rho)/\rho,\;\sum_i v_i+1\big]$ \tcp*{range of $L_t$, used to rescale it to $[0,1]$}
   \For{$t=1,\dots,T$}{
-    sample $a_t\sim\gamma_t\propto w_t$; bid $b_t$ on $S_t$; observe wins and $m(t)$\;
-    collect $f_t(a_t)$, pay $c_t(a_t)$; $B\leftarrow B-c_t(a_t)$\;
-    compute $f_t(a),\,c_t(a)$ for all $a$ from $m(t)$\;
-    $w_{t+1}(a)\leftarrow w_t(a)\exp\!\left(\eta_p\,[\,f_t(a)-\lambda_t(c_t(a)-\rho)\,]\right)$\;
-    $\lambda_{t+1}\leftarrow\Pi_{[0,\,1/\rho]}\!\left(\lambda_t-\eta_d(\rho-c_t(a_t))\right)$\;
-    \If{$B<1$}{play $(\emptyset,\emptyset)$ for the remaining rounds\;}
+    \lIf{$B<1$}{play $(\emptyset,\emptyset)$ and continue}
+    \textbf{Primal (Hedge):} $\gamma_t(a)\leftarrow w_t(a)/\sum_{a'}w_t(a')$, sample $a_t=(S_t,b_t)\sim\gamma_t$, bid $b_t$ on $S_t$\;
+    observe $m(t)$, collect $f_t(a_t)$, pay $c_t(a_t)$, $B\leftarrow B-c_t(a_t)$\;
+    \textbf{Full feedback:} compute $f_t(a),c_t(a)$ and $\tilde L_t(a)\leftarrow\frac{L_t(a,\lambda_t)-L_{\downarrow}}{L_{\uparrow}-L_{\downarrow}}\in[0,1]$ for all $a\in\mathcal A$\;
+    \textbf{Hedge update} with loss $\ell_t(a)=1-\tilde L_t(a)$: $w_{t+1}(a)\leftarrow w_t(a)\,e^{-\eta_p\,\ell_t(a)}$ \tcp*{$\gamma_{t+1}\propto\exp(\eta_p\sum_{s\le t}\tilde L_s)$}
+    \textbf{Dual (OGD):} $\lambda_{t+1}\leftarrow\Pi_{[0,\,1/\rho]}\big(\lambda_t-\eta_d\,(\rho-c_t(a_t))\big)$ \tcp*{overspending $\Rightarrow$ price goes up}
   }
 \end{algorithm}
 \end{algobox}
+\vspace{-0.05cm}
+{\tiny Hyper-parameters: $\eta_p=20$ on the rescaled Lagrangian (the worst-case $\sqrt{\log|\mathcal A|/T}$ is far too conservative at $T{=}2000$), $\eta_d=0.05$, $\lambda_1=0$.}
 \end{frame}
 
 % - - - - - - - - - - - - - - - - - - - -
@@ -539,36 +549,31 @@ $\lambda\in[0,1/\rho]$; stop bidding once $B<1$.
   \end{column}
   \begin{column}{0.45\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{r3_env_stationary.png}\\[0.1cm]
+    \includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]{figures/r3_env_stationary.png}\\[0.1cm]
     {\tiny Stationary sequence (R2 environment): $m_i(t)\sim\mathrm{Beta}(k_i,1)$, $k=(2,3,5)$.}
   \end{column}
 \end{columns}
 \end{frame}
 
 \begin{frame}{R3 --- Results}
-\footnotesize
+\scriptsize
 \centering
-\includegraphics[width=0.94\textwidth,height=0.55\textheight,keepaspectratio]{r3_results.png}\\[0.12cm]
-\begin{columns}[T]
-  \begin{column}{0.5\textwidth}
-    \centering
-    \textbf{Stationary:}\\
-    regret $6.3\pm0.8$ \quad ($T\cdot\OPT = 121.8$)\\
-    spent $262.8/300$
-  \end{column}
-  \begin{column}{0.5\textwidth}
-    \centering
-    \textbf{Non-stationary:}\\
-    regret $11.3\pm1.5$ \quad ($T\cdot\OPT = 228.7$)\\
-    spent $235.2/300$
-  \end{column}
-\end{columns}
+\makebox[\textwidth][c]{\includegraphics[width=1.12\textwidth]{figures/r3_results.png}}\\[0.25cm]
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lcccc@{}}
+  \toprule
+  Environment & $T\cdot\OPT$ & Final regret ($\pm$ std, 10 trials) & Regret$/T\cdot\OPT$ & Budget spent \\
+  \midrule
+  Stationary     & $121.8$ & $6.3\pm0.8$  & $5.2\%$ & $262.8\,/\,300$ \\
+  Non-stationary & $228.7$ & $11.3\pm1.5$ & $4.9\%$ & $235.2\,/\,300$ \\
+  \bottomrule
+\end{tabular}
 \end{frame}
 
 \begin{frame}{R3 --- Results: learned policy vs clairvoyant}
 \footnotesize
 \centering
-\includegraphics[width=0.94\textwidth,height=0.55\textheight,keepaspectratio]{r3_superarms.png}\\[0.12cm]
+\includegraphics[width=0.94\textwidth,height=0.55\textheight,keepaspectratio]{figures/r3_superarms.png}\\[0.12cm]
 \begin{itemize}
   \item \textbf{Stationary:} the agent converges to the clairvoyant super-arm
         ($S=\{1,2\}$, $b=(0.4,0.5)$) in $\sim\!1600$ of $2000$ rounds.
@@ -578,110 +583,232 @@ $\lambda\in[0,1/\rho]$; stop bidding once $B<1$.
 \end{itemize}
 \end{frame}
 
+\begin{frame}{R3 --- Comparison with Combinatorial-UCB}
+\scriptsize
+\centering
+\includegraphics[width=0.9\textwidth]{figures/r3_vs_cucb_regret.png}\\[0.1cm]
+\begin{columns}[T]
+  \begin{column}{0.56\textwidth}
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{@{}lcccc@{}}
+      \toprule
+      & \multicolumn{2}{c}{Final regret} & \multicolumn{2}{c}{Budget spent}\\
+      Environment & Primal-dual & CUCB & Primal-dual & CUCB\\
+      \midrule
+      Stationary     & $6.3\pm0.8$  & $72.1$  & $262.8$ & $218.8$\\
+      Non-stationary & $11.3\pm1.5$ & $108.6$ & $235.2$ & $299.4$\\
+      \bottomrule
+    \end{tabular}
+  \end{column}
+  \begin{column}{0.42\textwidth}
+    Same benchmark: best fixed strategy in hindsight.
+    CUCB (R2 agent) averages over \emph{all} past rounds, so on the fast-changing sequence its
+    estimates are always stale and it exhausts the budget early ($299.4/300$).
+    Primal-dual re-weights every super-arm each round $\Rightarrow$ $10\times$ lower regret in both worlds.
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{R3 --- Sensitivity to the Hedge learning rate}
+\scriptsize
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \begin{itemize}
+      \item Theory suggests $\eta_p=\sqrt{\log|\mathcal A|/T}\approx0.05$ for a worst-case
+            adversary over the full horizon.
+      \item At $T=2000$ that rate barely moves the weights: the primal player stays close to
+            uniform and the regret ($\approx110$) is half of ``doing nothing'' ($T\cdot\OPT=229$).
+      \item Larger rates make Hedge track the current regime much faster; from $\eta_p\approx20$
+            the final regret saturates around $10$, with no instability up to $200$.
+      \item We therefore use $\eta_p=20$ (on the Lagrangian rescaled to $[0,1]$) in all
+            R3/R4 experiments; $\eta_d=0.05$ for the dual step.
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{figures/r3_eta_sensitivity.png}\\[0.03cm]
+    {\tiny Final regret on the non-stationary sequence vs.\ $\eta_p$ (10 trials, $\pm$ s.e.).}
+  \end{column}
+\end{columns}
+\end{frame}
+
 % ####################################################################
 \section{Requirement 4 --- Non-stationary environment}
 % ####################################################################
 
-
 \begin{frame}{R4 --- Environment setting}
+\scriptsize
+\begin{columns}[T]
+  \begin{column}{0.5\textwidth}
+    \textbf{Same generator, slowly changing $k_i(t)$.}
+    {\tiny ($T=2000$, $v=(0.6,0.7,0.8)$, $B=300$, $\rho=0.15$, campaigns 2--3 exclusive, full feedback for all algorithms.)}
+    \begin{itemize}
+      \item $m_i(t)\sim\mathrm{Beta}(k_i(t),1)$, but now $k_i(t)$ is \emph{piecewise constant}
+            on $P=4$ long phases, breakpoints $\tau=(0,500,1100,1500,2000)$:
+            \[ k_1=(1,3,2,1),\quad k_2=(3,1,5,2),\quad k_3=(5,6,1,3). \]
+      \item In every phase a different campaign is the ``easy'' one ($k=1$), so the best bids
+            \emph{and} the budget split change at each breakpoint.
+      \item Phase lengths differ on purpose (500, 600, 400, 500): a window tuned to one phase
+            is not automatically right for the others.
+      \item Inside a phase it is a proper stochastic bandit $\Rightarrow$ a learner that forgets or
+            resets has time to re-learn (impossible in R3, phases of 10--30 rounds).
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio]{figures/r4_env_phases.png}
+  \end{column}
+\end{columns}
+\end{frame}
 
-Non-stationary environment with the following setting:
+\begin{frame}{R4 --- Baseline: best policy in hindsight}
+\scriptsize
+Phases are long, so the fair benchmark is a clairvoyant that knows the distribution of \emph{each}
+phase and solves the R2 LP once per phase, with $\mathbb P^{(p)}_i(b)=b^{\,k_i^{(p)}}$ and the same rate $\rho$:
+\vspace{-0.1cm}
+\[
+  \OPT^{(p)}=\max_{\gamma\in\Delta(\mathcal A)}\sum_{(S,b_S)}\gamma(S,b_S)\sum_{i\in S}(v_i-b_i)\,b_i^{\,k_i^{(p)}}
+  \;\;\text{s.t.}\;\;\sum_{(S,b_S)}\gamma(S,b_S)\sum_{i\in S}b_i\,b_i^{\,k_i^{(p)}}\le\rho .
+\]
+\vspace{-0.25cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}llllc@{}}
+  \toprule
+  Phase & Rounds & $k$ & Clairvoyant super-arm & $\OPT^{(p)}$/round\\
+  \midrule
+  1 & $[0,500)$     & $(1,3,5)$ & $\{1,2\}$, $b=(0.3,0.5)$ (w.p.\ $0.93$)      & $0.115$\\
+  2 & $[500,1100)$  & $(3,1,6)$ & $\{1,2\}$, $b=(0.4,0.3)$                     & $0.133$\\
+  3 & $[1100,1500)$ & $(2,5,1)$ & $\{1,3\}$, mix of $b=(0.3,0.3)$ and $(0.3,0.4)$ & $0.182$\\
+  4 & $[1500,2000)$ & $(1,2,3)$ & $\{1,2\}$, $b=(0.3,0.4)$ (w.p.\ $0.92$)      & $0.137$\\
+  \bottomrule
+\end{tabular}
+\end{center}
+\vspace{-0.15cm}
+\textbf{Best policy:} $\OPT=\sum_p(\tau_p-\tau_{p-1})\,\OPT^{(p)}=278.3$.\quad
+\textbf{Best fixed strategy} (R3 benchmark): $\{1,2\}$, $b=(0.3,0.4)$, $\OPT=212.5$.\quad
+Gap $=65.8$: the \emph{value of tracking the phases}.\\
+\textbf{Policy regret:} $R_T=\sum_t\big(\OPT^{(p(t))}-f_t(a_t)\big)$, with $p(t)$ the phase containing $t$.
+\end{frame}
 
+% - - - - - - - - - - - - - - - - - - - -
+\begin{frame}{R4 --- Algorithm (i): Combinatorial-UCB with sliding window}
+\scriptsize
+\textbf{Problem with plain CUCB:} after a breakpoint the old good arm keeps a high average and a tiny
+confidence radius, so it is never questioned again. \textbf{Fix:} only use the last $W$ rounds.
+\vspace{-0.1cm}
+\begin{algobox}
+\begin{algorithm}[H]
+  \scriptsize
+  \caption{\scriptsize SW-CUCB (full feedback, window $W$)}
+  \KwIn{super-arms $\mathcal A$, $T$, $B$, window $W=\lfloor2\sqrt{T\log T/\Upsilon_T}\rfloor=142$ ($\Upsilon_T=3$ changes), scale $c=0.1$}
+  \For{$t=1,\dots,T$}{
+    \lIf{$B<1$}{play $(\emptyset,\emptyset)$ and continue}
+    \ForEach{base arm $(i,b)$}{
+      $\hat{\mathbb P}^W_i(b)\leftarrow$ win frequency of $b$ on campaign $i$ over the last $W$ rounds, $n^W\leftarrow\min(t,W)$\;
+      $\mathbb P^{\mathrm{UCB}}_i(b)\leftarrow\hat{\mathbb P}^W_i(b)+c\sqrt{2\log W/n^W}$,\quad
+      $\mathbb P^{\mathrm{LCB}}_i(b)\leftarrow\hat{\mathbb P}^W_i(b)-c\sqrt{2\log W/n^W}$, clipped to $[0,1]$ and made monotone in $b$\;
+      $f^{\mathrm{UCB}}_i(b)\leftarrow(v_i-b)\,\mathbb P^{\mathrm{UCB}}_i(b)$,\quad $c^{\mathrm{LCB}}_i(b)\leftarrow b\,\mathbb P^{\mathrm{LCB}}_i(b)$\;
+    }
+    $\gamma_t\leftarrow\arg\max_{\gamma\in\Delta(\mathcal A)}\sum_{(S,b_S)}\gamma(S,b_S)\sum_{i\in S}f^{\mathrm{UCB}}_i(b_i)$
+      s.t. $\sum_{(S,b_S)}\gamma(S,b_S)\sum_{i\in S}c^{\mathrm{LCB}}_i(b_i)\le\rho$\;
+    sample $a_t\sim\gamma_t$, bid, observe $m(t)$ (win indicator of \emph{every} base arm), $B\leftarrow B-c_t(a_t)$\;
+  }
+\end{algorithm}
+\end{algobox}
+\end{frame}
+
+% - - - - - - - - - - - - - - - - - - - -
+\begin{frame}{R4 --- Algorithm (ii): Combinatorial-UCB with change detection (CUSUM)}
+\scriptsize
+\textbf{Idea:} keep all samples since the last reset, but run a CUSUM detector on the win indicator
+$X_t=\mathbb 1\{b\ge m_i(t)\}\sim\mathrm{Bern}(b^{k_i(t)})$ of every base arm; reset \emph{that arm only} when it fires.
+Sharper estimates inside a phase than a window, but a detection delay after each breakpoint and possible false alarms.
+\vspace{-0.1cm}
+\begin{algobox}
+\begin{algorithm}[H]
+  \scriptsize
+  \caption{\scriptsize CUSUM-CUCB (full feedback)}
+  \KwIn{$\mathcal A$, $T$, $B$, threshold $h=2\log(T/\Upsilon_T)=13$, warm-up $M=12$, tolerance $\varepsilon=0.05$, scale $c=0.1$}
+  \For{$t=1,\dots,T$}{
+    \lIf{$B<1$}{play $(\emptyset,\emptyset)$ and continue}
+    estimates as in SW-CUCB but over all samples since the last reset of $(i,b)$, with $\log T$ and $n_{i,b}$ (reset arm $\Rightarrow$ optimistic)\;
+    solve the same LP over super-arms, sample $a_t\sim\gamma_t$, bid, observe $m(t)$, $B\leftarrow B-c_t(a_t)$\;
+    \ForEach{base arm $(i,b)$ \textnormal{(CUSUM on $X_t$)}}{
+      \lIf{fewer than $M$ samples since reset}{use them to fix the reference mean $\hat u_0$}
+      $g^+\leftarrow\max\{0,\,g^++X_t-\hat u_0-\varepsilon\}$,\quad $g^-\leftarrow\max\{0,\,g^-+\hat u_0-X_t-\varepsilon\}$\;
+      \lIf{$\max\{g^+,g^-\}\ge h$}{reset statistics and CUSUM of $(i,b)$}
+    }
+  }
+\end{algorithm}
+\end{algobox}
+\end{frame}
+
+\begin{frame}{R4 --- Results: sliding window}
+\scriptsize
+\centering
+\includegraphics[width=0.9\textwidth]{figures/r4_sw_results.png}\\[0.1cm]
 \begin{itemize}
-    \item Slight variations (i.e. not too frequent)
-    \item Kept the same mean for highest competing bid for a few hundred iterations
-    \item Same highest competing bid across trials (so only variation is randomness within UCB).
+  \item Final policy regret $20.3\pm1.3$ ($\OPT=278.3$): $\approx93\%$ of the clairvoyant reward, spending $258.5/300$.
+        The best \emph{fixed} strategy would be $65.8$ behind, so the window is clearly tracking the phases.
+  \item Staircase shape: flat inside each phase, growing only for about one window after a breakpoint
+        (most visibly at $t=1100$, when the profitable campaign switches from 2 to 3).
+  \item Cost stays close to the pacing line $\rho\,t$: reward and cost share the same $\hat{\mathbb P}$, so the LP spends where it is worth it.
 \end{itemize}
-
 \end{frame}
 
-% - - - - - - - - - - - - - - - - - - - -
-\begin{frame}{R4 --- Algorithm: }
-
-  \begin{algobox}
-  \begin{algorithm}[H]
-    \scriptsize
-    \caption{\scriptsize Combinatorial UCB with Sliding Window}
-    \KwIn{... window size ${W}$ ...}
-    \For{$t = 1,\dots,T$}{
-        % On \texttt{update()}:\;
-        % \KwIn{played arms, reward, cost}\;
-        % Record "empty" entry for non-played arms\;
-        % \If{$t \gt W$}{
-        %     \If{$history(t-W) not empty$}{
-        %         
-        %     }
-        % }
-      \ForEach{$b \in \bidset$}{
-        $\overline{f}_t(b)\leftarrow\frac{1}{N_{W, t-1}(b)}\Sigma_{t'=max(1, t-W)}^{t'=t}f_{t'}(b)\mathbb{I}(b_{t'}=b)$\;
-        $\overline{f}_t^{UCB}(b)\leftarrow\overline{f}_t(b)+\sqrt{\frac{2\log(T)}{N_{W, t-1}(b)}}$\;
-        $\overline{c}_t(b)\leftarrow\frac{1}{N_{W, t-1}(b)}\Sigma_{t'=max(1, t-W)}^{t'=t}c_{t'}(b)\mathbb{I}(b_{t'}=b)$\;
-        $\overline{c}_t^{UCB}(b)\leftarrow\overline{c}_t(b)-\sqrt{\frac{2\log(T)}{N_{W, t-1}(b)}}$\;
-      }
-      Compute $\gamma_t$ solution of the LP defining $OPT_{t}$ \;
-      
-      Bid $b_t \sim \gamma_t$ \;
-      Observe $f_t(b_t)$ and $c_t(b_t)$\;
-      $B\leftarrow B-c_t(b_t)$\;
-      \If{$B<1$} {
-        Terminate\;
-      }
-    }
-  \end{algorithm}
-  \end{algobox}
-
-\end{frame}
-
-% - - - - - - - - - - - - - - - - - - - -
-\begin{frame}{R4 --- Algorithm }
-
-  \begin{algobox}
-  \begin{algorithm}[H]
-    \scriptsize
-    \caption{\scriptsize Combinatorial UCB with Change Detection}
-    \KwIn{... change ${\epsilon}$, change detection threshold ${h}$ ...}
-    $\tau_b \leftarrow 1$ for all $b\in\bidset$ \tcp*{last detected change per arm}
-
-    \For{$t = 1,\dots,T$}{
-      \ForEach{$b \in \bidset$}{
-        $\overline{f}_t(b)\leftarrow\frac{1}{N_{\tau_b, t-1}(b)}\Sigma_{t'=\tau_b}^{t'=t}f_{t'}(b)\mathbb{I}(b_{t'}=b)$\;
-        $\overline{f}_t^{UCB}(b)\leftarrow\overline{f}_t(b)+\sqrt{\frac{2\log(T)}{N_{\tau_b, t-1}(b)}}$\;
-        $\overline{c}_t(b)\leftarrow\frac{1}{N_{\tau_b, t-1}(b)}\Sigma_{t'=\tau_b}^{t'=t}c_{t'}(b)\mathbb{I}(b_{t'}=b)$\;
-        $\overline{c}_t^{UCB}(b)\leftarrow\overline{c}_t(b)-\sqrt{\frac{2\log(T)}{N_{\tau_b, t-1}(b)}}$\;
-      }
-
-     Same as other Combinatorial UCB... \;
-
-     \If{\texttt{change-detected}($f_t(b_t), c_t(b_t)$)}{
-        $\tau_b \leftarrow t$ \;
-     }
-      
-      $B\leftarrow B-c_t(b_t)$ ...\;
-    }
-  \end{algorithm}
-  \end{algobox}
-
-
-\end{frame}
-
-\begin{frame}{R4 --- Results: Sliding Window}
-
+\begin{frame}{R4 --- Results: change detection}
+\scriptsize
 \centering
-\includegraphics[width=0.48\textwidth,keepaspectratio]{r4_sliding_window_regret.png}\hfill
-\includegraphics[width=0.48\textwidth,keepaspectratio]{r4_sliding_window_cost.png}
-
-
+\includegraphics[width=0.9\textwidth]{figures/r4_cusum_results.png}\\[0.1cm]
+\begin{itemize}
+  \item Final policy regret $27.3\pm1.1$, spend $247.5/300$: slightly worse than SW-CUCB ($20.3$), far better than any fixed strategy.
+  \item Regret also grows in steps at the breakpoints, with a longer transient: every base arm must accumulate $h=13$ units of
+        evidence before it resets ($\approx133$ resets per trial for 3 true changes, so some false alarms).
+  \item Same lesson as Lab 10: comparable to the sliding window, with more hyper-parameters ($h,M,\varepsilon$).
+\end{itemize}
 \end{frame}
 
-
-\begin{frame}{R4 --- Results: Change Detection}
-
+\begin{frame}{R4 --- Primal-dual on the slowly-changing sequence}
+\scriptsize
 \centering
-\includegraphics[width=0.48\textwidth,keepaspectratio]{r4_change_detection_regret.png}\hfill
-\includegraphics[width=0.48\textwidth,keepaspectratio]{r4_change_detection_cost.png}
+\makebox[\textwidth][c]{\includegraphics[width=1.02\textwidth]{figures/r4_pd_results.png}}\\[0.1cm]
+\begin{itemize}
+  \item Same agent and hyper-parameters as R3 ($\eta_p=20$, $\eta_d=0.05$), nothing tuned for this environment.
+  \item Its guarantee is w.r.t.\ the best \emph{fixed} strategy and it delivers (regret $6.8$); against the best
+        \emph{policy} the regret is $72.6\pm2.0$: it never captures the $65.8$ that tracking the phases is worth.
+  \item No forgetting in Hedge: the weights of one phase must be undone by the next, so the gap jumps at each
+        breakpoint (phase 3 is lost almost entirely) and $\lambda_t$ drops to $0$ while it under-spends.
+\end{itemize}
+\end{frame}
 
-
-
+\begin{frame}{R4 --- Comparison of the three learners}
+\scriptsize
+\begin{columns}[T]
+  \begin{column}{0.54\textwidth}
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}lcc@{}}
+      \toprule
+      Algorithm & Regret vs.\ best policy & Spent $/300$\\
+      \midrule
+      SW-CUCB ($W{=}142$)      & $\mathbf{20.3\pm1.3}$ & $258.5$\\
+      CUSUM-CUCB               & $27.3\pm1.1$          & $247.5$\\
+      Primal-dual (R3)         & $72.6\pm2.0$          & $232.1$\\
+      \bottomrule
+    \end{tabular}\\[0.05cm]
+    {\tiny Best policy $\OPT=278.3$, best fixed strategy $212.5$; primal-dual's regret vs.\ the fixed benchmark is only $6.8$.}
+    \par\vspace{0.15cm}
+    \textbf{Mirror image of R3.} With fast changes (10--30 rounds) no phase can be learned and only the
+    adversarial primal-dual guarantee is meaningful ($10\times$ better). With slow changes (400--600 rounds)
+    forgetting (window) or resetting (CUSUM) lets a stochastic learner be near-optimal inside each phase and
+    beat primal-dual $3\times$. The sliding window is the simplest and best here.
+  \end{column}
+  \begin{column}{0.44\textwidth}
+    \centering
+    \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{figures/r4_sw_pulls.png}\\[0.03cm]
+    {\tiny SW-CUCB pulls per phase vs.\ clairvoyant: most mass on the phase optimum.}
+  \end{column}
+\end{columns}
 \end{frame}
 
 % ####################################################################
@@ -702,9 +829,10 @@ Non-stationary environment with the following setting:
         regret $\approx 6$ (stationary) and $\approx 11$ (non-stationary) at $T=2000$ and spends
         $80$--$90\%$ of the budget: the dual variable $\lambda_t$ prices the budget and paces the
         spend over the whole horizon.
-  \item \textbf{Non-stationarity (R4).} Sliding window and change detection both recover after a
-        regime change, but they trade adaptivity for variance: a short window forgets useful data,
-        a long one reacts late.
+  \item \textbf{Slow non-stationarity (R4) flips the ranking.} With phases of 400--600 rounds,
+        SW-CUCB (regret $20$) and CUSUM-CUCB ($27$) track the best \emph{policy}, while primal-dual
+        ($73$) only matches the best \emph{fixed} strategy: no forgetting means every phase must
+        undo the weights of the previous one.
   \item \textbf{Limitations.} Small instances ($N=3$, $|\bidset|\le 11$), i.i.d.\ uniform competitors,
         fixed valuations, and only one seed for the R3 adversarial sequence.
 \end{itemize}
@@ -720,8 +848,9 @@ Non-stationary environment with the following setting:
         graph, with sublinear-looking regret dominated by near-equivalent super-arms.
   \item \textbf{R3:} A single primal-dual learner works in both the stochastic and the adversarial
         world, with the lowest regret of all methods tested.
-  \item \textbf{R4:} Sliding-window and change-detection variants of Combinatorial-UCB handle
-        slowly-varying competitors; the primal-dual method remains a strong baseline.
+  \item \textbf{R4:} Sliding-window and change-detection Combinatorial-UCB exploit within-phase
+        stationarity and beat primal-dual $3\times$ on slowly-varying competitors; the right learner
+        depends on the time scale of the changes.
 \end{itemize}
 \vspace{0.2cm}
 \textbf{Future work:} tune the confidence radius (e.g.\ Bernstein bounds) to improve
@@ -739,17 +868,30 @@ LP relaxations instead of enumerating super-arms.
 \appendix
 % ####################################################################
 
+\begin{frame}{Appendix --- R3: cumulative cost, primal-dual vs.\ CUCB}
+\centering
+\makebox[\textwidth][c]{\includegraphics[width=1.05\textwidth]{figures/r3_vs_cucb_cost.png}}\\[0.1cm]
+{\tiny Primal-dual paces the spend close to $\rho t$ in both sequences; CUCB under-spends on the stationary one and exhausts the budget at $t\approx1700$ on the non-stationary one.}
+\end{frame}
+
+\begin{frame}{Appendix --- R4: chosen super-arms per phase}
+\centering
+\includegraphics[width=0.49\textwidth]{figures/r4_cusum_pulls.png}\hfill
+\includegraphics[width=0.49\textwidth]{figures/r4_pd_pulls.png}\\[0.1cm]
+{\tiny Left: CUSUM-CUCB vs.\ clairvoyant. Right: primal-dual vs.\ clairvoyant --- in phase 3 it keeps playing $\{1,2\}$ instead of switching to $\{1,3\}$.}
+\end{frame}
+
 \begin{frame}{Appendix --- R1 budget consumption}
 \scriptsize
 \begin{columns}[T]
   \begin{column}{0.5\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{r1_payments_comparison.png}\\[0.03cm]
+    \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{figures/r1_payments_comparison.png}\\[0.03cm]
     {\tiny Cumulative payments of UCB1 vs.\ the budgeted UCB-like agent (single run).}
   \end{column}
   \begin{column}{0.5\textwidth}
     \centering
-    \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{r1_ucb1_bids.png}\\[0.03cm]
+    \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{figures/r1_ucb1_bids.png}\\[0.03cm]
     {\tiny Bids chosen by UCB1 over time and number of pulls per arm.}
   \end{column}
 \end{columns}
