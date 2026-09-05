@@ -124,35 +124,80 @@ achieving sublinear regret in both.
 | ![Learned policy vs clairvoyant](Latex_presentation/figures/r3_superarms.png) | |
 | Super-arms actually played vs. the clairvoyant's: the agent converges to (or closely tracks) the optimal super-arm in both settings. | |
 
+The deck also stress-tests the primal-dual agent along two extra axes: how it compares to the
+Requirement 2 Combinatorial-UCB baseline (which averages over *all* past rounds and has no
+adversarial guarantee), and how sensitive its regret is to the Hedge learning rate `η_p`.
+
+| | |
+|---|---|
+| ![Primal-dual vs Combinatorial-UCB](Latex_presentation/figures/r3_vs_cucb_regret.png) | ![Hedge learning-rate sensitivity](Latex_presentation/figures/r3_eta_sensitivity.png) |
+| Final regret, primal-dual vs. Combinatorial-UCB: `6.3` vs. `72.1` (stationary), `11.3` vs. `108.6` (non-stationary) — CUCB's stale averages make it roughly 10x worse and it exhausts the budget early on the non-stationary sequence (`299.4/300`). | Final regret on the non-stationary sequence as a function of `η_p`: near the theoretical rate `≈ 0.05` Hedge barely moves and regret stays close to `T·OPT`; it saturates around `≈ 10` from `η_p ≈ 20` on, which is the rate used throughout R3/R4. |
+
+(The appendix also has the matching [cumulative-spend comparison](Latex_presentation/figures/r3_vs_cucb_cost.png) between the two agents.)
+
 ## Requirement 4 — Slightly non-stationary environments with multiple campaigns
 
 **Notebook:** [`requirement_4.ipynb`](requirement_4.ipynb)
 
-A gentler form of non-stationarity than Requirement 3: the horizon is split into a handful of
-long **phases** (4 phases of 400-600 rounds each), each with its own fixed `k_i` per campaign —
-so within a phase the environment is a proper stochastic bandit, long enough to be learned
-before the next phase starts. The benchmark is the best *policy* in hindsight (the clairvoyant
-LP solved once per phase), which is strictly stronger than the fixed-strategy benchmark of
-Requirement 3.
+A gentler form of non-stationarity than Requirement 3: the horizon is split into `P = 4` long
+**phases** with breakpoints `τ = (0, 500, 1100, 1500, 2000)`, each with its own fixed `k_i` per
+campaign (`k_1 = (1,3,2,1)`, `k_2 = (3,1,5,2)`, `k_3 = (5,6,1,3)`) — so within a phase the
+environment is a proper stochastic bandit, long enough to be learned before the next phase
+starts (impossible in Requirement 3, whose phases last only 10-30 rounds). Phase lengths differ
+on purpose (500, 600, 400, 500 rounds), so a window or detector tuned to one phase isn't
+automatically right for the others.
+
+Because the phases are long, the benchmark is the best *policy* in hindsight — a clairvoyant
+that solves the Requirement 2 LP once per phase — which is strictly stronger than the
+fixed-strategy benchmark of Requirement 3:
+
+| Phase | Rounds | `k = (k_1,k_2,k_3)` | Clairvoyant super-arm | OPT/round |
+|---|---|---|---|---|
+| 1 | `[0, 500)` | `(1, 3, 5)` | `{1,2}`, `b=(0.3,0.5)` (w.p. `0.93`) | `0.115` |
+| 2 | `[500, 1100)` | `(3, 1, 6)` | `{1,2}`, `b=(0.4,0.3)` | `0.133` |
+| 3 | `[1100, 1500)` | `(2, 5, 1)` | `{1,3}`, mix of `(0.3,0.3)` and `(0.3,0.4)` | `0.182` |
+| 4 | `[1500, 2000)` | `(1, 2, 3)` | `{1,2}`, `b=(0.3,0.4)` (w.p. `0.92`) | `0.137` |
+
+Best policy `OPT = 278.3`; best *fixed* strategy (the Requirement 3 benchmark) `OPT = 212.5`;
+the gap of `65.8` is exactly the value of being able to track the phases.
 
 Three algorithms are compared, all under the same full-feedback assumption as Requirement 3:
 
 - **Combinatorial-UCB with a sliding window (SW-CUCB)** — extends Requirement 2's learner by
-  estimating each base arm only from the last `W` rounds, so it forgets stale, pre-breakpoint
-  data.
+  estimating each base arm only from the last `W = 142` rounds, so it forgets stale,
+  pre-breakpoint data.
 - **Combinatorial-UCB with change detection (CUSUM-CUCB)** — keeps all samples since the last
   detected change per base arm, and resets a base arm's statistics when a CUSUM detector fires
   on it, so it doesn't pay a constant "forgetting" cost inside a phase.
-- **The primal-dual method of Requirement 3**, run unchanged, as a robustness baseline: it has
-  no forgetting mechanism, so its regret is expected to grow at each breakpoint rather than
-  stay flat.
+- **The primal-dual method of Requirement 3**, run unchanged with the same hyperparameters, as
+  a robustness baseline: it has no forgetting mechanism, so the weights built up in one phase
+  must be undone by the next.
 
 | | |
 |---|---|
-| ![Sliding window regret](Latex_presentation/figures/r4_sliding_window_regret.png) | ![Sliding window cost](Latex_presentation/figures/r4_sliding_window_cost.png) |
-| Regret of SW-CUCB against the best-policy-in-hindsight benchmark — flat inside each phase, rising just after each breakpoint. | Cumulative spend of SW-CUCB, tracking the pacing line `ρ·t`. |
-| ![Change detection regret](Latex_presentation/figures/r4_change_detection_regret.png) | ![Change detection cost](Latex_presentation/figures/r4_change_detection_cost.png) |
-| Regret of CUSUM-CUCB. | Cumulative spend of CUSUM-CUCB. |
+| ![Environment: phases](Latex_presentation/figures/r4_env_phases.png) | |
+| The `k_i(t)` schedule: piecewise-constant on the 4 phases above, a different campaign is the "easy" one (`k=1`) in each. | |
+| ![Sliding window results](Latex_presentation/figures/r4_sw_results.png) | ![Change detection results](Latex_presentation/figures/r4_cusum_results.png) |
+| SW-CUCB: final policy regret `20.3 ± 1.3` (`≈ 93%` of the clairvoyant reward, spending `258.5/300`); staircase shape, flat inside each phase and rising for about one window after a breakpoint. | CUSUM-CUCB: final policy regret `27.3 ± 1.1`, spend `247.5/300` — slightly worse than SW-CUCB (a detector needs `h = 13` units of evidence to reset, so more false alarms and a longer transient), still far better than any fixed strategy. |
+| ![Primal-dual results](Latex_presentation/figures/r4_pd_results.png) | ![SW-CUCB pulls per phase](Latex_presentation/figures/r4_sw_pulls.png) |
+| Primal-dual (same agent as R3, untuned): regret `72.6 ± 2.0` against the best *policy*, but only `6.8` against the best *fixed* strategy — consistent with its guarantee, it just isn't built to track phases. | Pulls per phase vs. the clairvoyant super-arm: most of the mass sits on the phase optimum, the rest one bid step lower. |
+
+**Comparison of the three learners** (best policy `OPT = 278.3`, best fixed strategy `212.5`):
+
+| Algorithm | Regret vs. best policy | Spent / 300 |
+|---|---|---|
+| SW-CUCB (`W = 142`) | **20.3 ± 1.3** | 258.5 |
+| CUSUM-CUCB | 27.3 ± 1.1 | 247.5 |
+| Primal-dual (R3) | 72.6 ± 2.0 | 232.1 |
+
+This is the mirror image of Requirement 3: with fast changes (10-30 rounds) no phase can be
+learned and only primal-dual's adversarial guarantee is meaningful (10x better there); with
+slow changes (400-600 rounds) forgetting (window) or resetting (CUSUM) lets a stochastic
+learner stay near-optimal inside each phase and beat primal-dual 3x here — the right learner
+depends on the time scale of the change. The appendix has the matching per-phase super-arm
+plots for [CUSUM-CUCB and primal-dual vs. the clairvoyant](Latex_presentation/figures/r4_cusum_pulls.png)
+(the [primal-dual one](Latex_presentation/figures/r4_pd_pulls.png) shows it stuck on `{1,2}`
+in phase 3 instead of switching to `{1,3}`).
 
 ## Presentation
 
